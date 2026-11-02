@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Healthcare Intelligence Dashboard</title>
+    <style>
+        :root {
+            --bg: #f2f6f9;
+            --card: #fff;
+            --ink: #0b2540;
+            --mut: #5b6f84;
+            --line: #dfe8ef;
+            --navy: #0b2540;
+            --teal: #0e9aa7;
+            --blue: #3b82c4;
+            --warn: #d9822b;
+            --sh: 0 6px 24px rgba(11, 37, 64, .07)
+        }
+
+        :root[data-theme=dark] {
+            --bg: #08121e;
+            --card: #0f2033;
+            --ink: #e8f1f8;
+            --mut: #93a8bc;
+            --line: #1c3550;
+            --sh: 0 6px 24px rgba(0, 0, 0, .4)
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font: 15px/1.5 "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif
+        }
+
+        .wrap {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 0 20px 40px
+        }
+
+        header {
+            background: linear-gradient(120deg, #0b2540, #0f4c6b 60%, #0e9aa7);
+            color: #fff;
+            padding: 26px 0 70px
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: flex-start;
+            flex-wrap: wrap
+        }
+
+        .brand {
+            display: flex;
+            gap: 14px;
+            align-items: center
+        }
+
+        .brand h1 {
+            margin: 0;
+            font-size: 26px;
+            letter-spacing: -.3px
+        }
+
+        .brand p {
+            margin: 4px 0 0;
+            opacity: .85;
+            max-width: 620px;
+            font-size: 14px
+        }
+
+        .badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center
+        }
+
+        .pill {
+            border: 1px solid rgba(255, 255, 255, .35);
+            background: rgba(255, 255, 255, .12);
+            padding: 5px 12px;
+            border-radius: 99px;
+            font-size: 12.5px
+        }
+
+        button {
+            font: inherit;
+            cursor: pointer
+        }
+
+        .tbtn {
+            color: #fff;
+            cursor: pointer
+        }
+
+        main {
+            margin-top: -48px
+        }
+
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 14px
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            box-shadow: var(--sh);
+            padding: 18px;
+            transition: transform .2s, box-shadow .2s
+        }
+
+        .card:hover {
+            transform: translateY(-2px)
+        }
+
+        .kpi .ic {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: rgba(14, 154, 167, .12);
+            color: var(--teal);
+            display: grid;
+            place-items: center;
+            margin-bottom: 8px
+        }
+
+        .kpi small {
+            color: var(--mut);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: .6px
+        }
+
+        .kpi b {
+            display: block;
+            font-size: 28px;
+            letter-spacing: -.5px;
+            margin: 2px 0
+        }
+
+        .kpi span {
+            color: var(--mut);
+            font-size: 12.5px
+        }
+
+        h2 {
+            font-size: 18px;
+            margin: 34px 0 12px
+        }
+
+        h3 {
+            margin: 0 0 4px;
+            font-size: 16px
+        }
+
+        .sub {
+            color: var(--mut);
+            font-size: 13px;
+            margin: 0 0 12px
+        }
+
+        .grid2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 14px
+        }
+
+        .ins {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 14px
+        }
+
+        .ins .card {
+            border-left: 4px solid var(--teal)
+        }
+
+        .ins .card.w {
+            border-left-color: var(--warn)
+        }
+
+        .ins h4 {
+            margin: 0 0 6px;
+            font-size: 15px
+        }
+
+        .ins p {
+            margin: 0 0 8px;
+            font-size: 14px
+        }
+
+        .imp {
+            font-size: 13px;
+            color: var(--mut)
+        }
+
+        .imp b {
+            color: var(--teal)
+        }
+
+        .bar {
+            display: grid;
+            grid-template-columns: 120px 1fr 70px;
+            gap: 10px;
+            align-items: center;
+            margin: 9px 0;
+            font-size: 13.5px
+        }
+
+        .track {
+            background: rgba(59, 130, 196, .1);
+            border-radius: 8px;
+            height: 22px;
+            overflow: hidden
+        }
+
+        .fill {
+            height: 100%;
+            border-radius: 8px;
+            background: linear-gradient(90deg, var(--blue), var(--teal));
+            width: 0;
+            transition: width .7s cubic-bezier(.2, .8, .2, 1)
+        }
+
+        .bar:hover .fill {
+            filter: brightness(1.12)
+        }
+
+        .bar.top .fill {
+            background: linear-gradient(90deg, #0b2540, var(--teal))
+        }
+
+        .tag {
+            font-size: 10.5px;
+            background: var(--teal);
+            color: #fff;
+            border-radius: 6px;
+            padding: 1px 6px;
+            margin-left: 4px;
+            vertical-align: middle
+        }
+
+        .tag.l {
+            background: var(--warn)
+        }
+
+        .ctl {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px
+        }
+
+        .ctl button {
+            border: 1px solid var(--line);
+            background: transparent;
+            color: var(--ink);
+            border-radius: 8px;
+            padding: 3px 10px;
+            font-size: 12px
+        }
+
+        .ctl button.on {
+            background: var(--navy);
+            color: #fff;
+            border-color: var(--navy)
+        }
+
+        :root[data-theme=dark] .ctl button.on {
+            background: var(--teal)
+        }
+
+        .cols {
+            display: flex;
+            align-items: flex-end;
+            gap: 6px;
+            height: 190px;
+            margin-top: 6px
+        }
+
+        .col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            height: 100%;
+            font-size: 11px;
+            color: var(--mut)
+        }
+
+        .col i {
+            display: block;
+            width: 100%;
+            border-radius: 6px 6px 0 0;
+            background: linear-gradient(0deg, var(--blue), var(--teal));
+            height: 0;
+            transition: height .7s
+        }
+
+        .col.pk i {
+            background: linear-gradient(0deg, #0b2540, var(--teal))
+        }
+
+        .col.lo i {
+            background: var(--warn)
+        }
+
+        .col:hover i {
+            filter: brightness(1.15)
+        }
+
+        .col em {
+            font-style: normal;
+            font-size: 10px
+        }
+
+        #tip {
+            position: fixed;
+            pointer-events: none;
+            background: #0b2540;
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            opacity: 0;
+            transition: opacity .12s;
+            z-index: 9
+        }
+
+        .adhoc {
+            background: linear-gradient(135deg, rgba(14, 154, 167, .1), rgba(59, 130, 196, .06));
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 18px
+        }
+
+        .big {
+            font-size: 30px;
+            font-weight: 700;
+            letter-spacing: -.5px
+        }
+
+        .mini {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px
+        }
+
+        .mini td,
+        .mini th {
+            padding: 5px 4px;
+            border-bottom: 1px solid var(--line);
+            text-align: left
+        }
+
+        .mini td:last-child,
+        .mini th:last-child {
+            text-align: right
+        }
+
+        .act {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px
+        }
+
+        .act .card h4 {
+            margin: 0 0 8px;
+            color: var(--teal)
+        }
+
+        .act ul {
+            margin: 0;
+            padding-left: 18px;
+            font-size: 14px
+        }
+
+        .act li {
+            margin-bottom: 6px
+        }
+
+        footer {
+            margin-top: 36px;
+            color: var(--mut);
+            font-size: 12.5px;
+            text-align: center;
+            border-top: 1px solid var(--line);
+            padding-top: 16px
+        }
+
+        @media(max-width:560px) {
+            .bar {
+                grid-template-columns: 90px 1fr 56px
+            }
+
+            .brand h1 {
+                font-size: 21px
+            }
+        }
+
+        @media print {
+            header {
+                background: #0b2540 !important;
+                -webkit-print-color-adjust: exact
+            }
+
+            .ctl,
+            .tbtn {
+                display: none
+            }
+
+            .card {
+                box-shadow: none;
+                break-inside: avoid
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="wrap">
+            <div class="top">
+                <div class="brand"><svg width="46" height="46" viewBox="0 0 48 48" aria-hidden="true">
+                        <rect width="48" height="48" rx="13" fill="rgba(255,255,255,.16)" />
+                        <path d="M20 11h8v9h9v8h-9v9h-8v-9h-9v-8h9z" fill="#fff" />
+                        <path d="M8 27h9l3-6 5 11 3-5h12" fill="none" stroke="#0e9aa7" stroke-width="2.4"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <div>
+                        <h1>Healthcare Intelligence Dashboard</h1>
+                        <p>Executive overview of patient activity, hospital billing, medical conditions, insurance
+                            distribution and emergency workload.</p>
+                    </div>
+                </div>
+                <div class="badges"><span class="pill">Executive Overview</span><span class="pill">May 2019 – May 2024 ·
+                        61 months</span><button class="pill tbtn" id="th" aria-label="Toggle theme">◐ Theme</button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="wrap">
+        <main>
+            <section class="kpis" id="kpis"></section>
+
+            <h2>Executive Summary</h2>
+            <section class="ins">
+                <div class="card">
+                    <h4>Demand is evenly spread across conditions</h4>
+                    <p>Arthritis (9,218) and Diabetes (9,216) lead, but all six conditions sit within 1.3% of each
+                        other.</p>
+                    <div class="imp"><b>Implication:</b> No single condition dominates volume; capacity planning should
+                        cover all six service lines rather than one.</div>
+                </div>
+                <div class="card">
+                    <h4>Insurance mix is balanced</h4>
+                    <p>Cigna covers the most patients (11,139; 20.3%), only 317 above Aetna (10,822), the lowest.</p>
+                    <div class="imp"><b>Implication:</b> Payer exposure is diversified; no provider is a dependency risk
+                        on volume alone.</div>
+                </div>
+                <div class="card">
+                    <h4>Average billing is flat across ages</h4>
+                    <p>Patients aged 60+ average 25,563.59 versus 25,594.54 for all patients, a difference of about
+                        0.1%.</p>
+                    <div class="imp"><b>Implication:</b> Age alone does not distinguish cost on average; look at case
+                        mix and stay length instead.</div>
+                </div>
+                <div class="card w">
+                    <h4>One in three admissions is an emergency</h4>
+                    <p>18,102 emergency admissions were recorded (32.9% of 54,966); July is the busiest month (1,573)
+                        and February the quietest (1,452).</p>
+                    <div class="imp"><b>Implication:</b> Emergency staffing needs are steady all year, with mild peaks
+                        to plan for.</div>
+                </div>
+                <div class="card w">
+                    <h4>Abnormal emergency results need triage</h4>
+                    <p>6,038 emergency cases (33.4% of emergency admissions) carry abnormal test results.</p>
+                    <div class="imp"><b>Implication:</b> Prioritise review of this group first.</div>
+                </div>
+            </section>
+
+            <h2>Key Business Insights</h2>
+            <section class="grid2">
+                <div class="card">
+                    <h3>Patients by medical condition</h3>
+                    <p class="sub">Which condition affects the most patients? <b>Arthritis</b>, narrowly.</p>
+                    <div class="ctl" data-for="cond"></div>
+                    <div id="cond"></div>
+                </div>
+                <div class="card">
+                    <h3>Patient share by insurance provider</h3>
+                    <p class="sub">Which provider covers the most patients? <b>Cigna</b>, narrowly.</p>
+                    <div class="ctl" data-for="ins"></div>
+                    <div id="ins"></div>
+                </div>
+                <div class="card">
+                    <h3>Patient age profile</h3>
+                    <p class="sub">Average age across the network</p>
+                    <div class="big">51.5 years</div>
+                    <p class="imp">Based on 54,966 admission records. Ages range from 13 to 89 years in the cleaned
+                        data.</p>
+                </div>
+                <div class="card">
+                    <h3>Average treatment cost over time</h3>
+                    <p class="sub">Monthly average billing amount, 61 months. Overall average: <b>25,594.54</b></p>
+                    <table class="mini">
+                        <tr>
+                            <th>Month</th>
+                            <th>Avg billing</th>
+                        </tr>
+                        <tr>
+                            <td>2019-05 (first)</td>
+                            <td>25,897.45</td>
+                        </tr>
+                        <tr>
+                            <td>2019-09</td>
+                            <td>24,915.55</td>
+                        </tr>
+                        <tr>
+                            <td>2024-01</td>
+                            <td>25,836.70</td>
+                        </tr>
+                        <tr>
+                            <td>2024-04</td>
+                            <td>24,930.03</td>
+                        </tr>
+                        <tr>
+                            <td>2024-05 (latest)</td>
+                            <td>25,464.90</td>
+                        </tr>
+                    </table>
+                    <p class="imp">Monthly averages stay in a narrow band of roughly 24,900–26,300 across the months
+                        shown, with no sustained rise or fall.</p>
+                </div>
+                <div class="card">
+                    <h3>Age and treatment cost</h3>
+                    <p class="sub">Is cost related to age?</p>
+                    <div class="big">25,563.59</div>
+                    <p class="imp">Average billing for patients 60+, against 25,594.54 for everyone. No meaningful gap
+                        in averages.</p>
+                </div>
+            </section>
+
+            <h2>Additional Management Insights</h2>
+            <section class="adhoc">
+                <div class="grid2">
+                    <div class="card">
+                        <h3>Emergency admissions by month</h3>
+                        <p class="sub">Emergency Department capacity planning (all years combined by calendar month)</p>
+                        <div class="cols" id="em"></div>
+                    </div>
+                    <div>
+                        <div class="card" style="margin-bottom:14px">
+                            <h3>High-cost patient group</h3>
+                            <div class="big">5,497</div>
+                            <p class="imp">Admissions billed above the 90th percentile of billing: about 10% of all
+                                records, flagged for finance review.</p>
+                        </div>
+                        <div class="card">
+                            <h3>Emergency cases with abnormal results</h3>
+                            <div class="big">6,038</div>
+                            <p class="imp">One-third of the 18,102 emergency admissions, a ready-made priority list for
+                                clinical review.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <h2>Management Priorities &amp; Recommended Actions</h2>
+            <section class="act">
+                <div class="card">
+                    <h4>What is happening?</h4>
+                    <ul>
+                        <li>54,966 admissions across 5 years with balanced volume by condition and insurer.</li>
+                        <li>Billing averages about 25,600 per admission and shows no clear age or time pattern.</li>
+                        <li>Emergency admissions run about 1,500 a month.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4>Why does it matter?</h4>
+                    <ul>
+                        <li>Even demand means resources must be planned across all conditions.</li>
+                        <li>A steady emergency flow with a July high affects staffing.</li>
+                        <li>Abnormal emergency results and high-cost admissions concentrate clinical and financial risk.
+                        </li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4>What should management consider?</h4>
+                    <ul>
+                        <li>Set emergency staffing baselines near 1,500 per month with a summer buffer.</li>
+                        <li>Triage the 6,038 abnormal emergency cases first.</li>
+                        <li>Review the 5,497 high-cost admissions for drivers such as condition and stay length.</li>
+                        <li>Investigate cost drivers beyond age.</li>
+                    </ul>
+                </div>
+            </section>
+            <footer>Healthcare Intelligence Dashboard · Reporting period May 2019 – May 2024 · 54,966 admission records
+                · Billing amounts are shown as recorded; currency is not specified in the source and billed amounts are
+                not payments received. Counts are admission records, not unique patients.</footer>
+        </main>
+    </div>
+    <div id="tip"></div>
+    <script>
+        const $ = s => document.querySelector(s), f = n => n.toLocaleString("en-US"), tip = $("#tip");
+        const D = { cond: [["Arthritis", 9218], ["Diabetes", 9216], ["Hypertension", 9151], ["Obesity", 9146], ["Cancer", 9140], ["Asthma", 9095]], ins: [["Cigna", 11139], ["Medicare", 11039], ["UnitedHealthcare", 11014], ["Blue Cross", 10952], ["Aetna", 10822]] };
+        const T = 54966, S = { cond: { sort: "v", zoom: 0 }, ins: { sort: "v", zoom: 0 } };
+        const ic = p => `<div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg></div>`;
+        const K = [["Admission records", "54,966", "Cleaned records, May 2019 – May 2024", '<path d="M4 20v-9l8-6 8 6v9z"/><path d="M12 10v6M9 13h6"/>'], ["Avg billing per admission", "25,594.54", "Mean billing amount, currency not specified", '<circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 10h6"/>'], ["Average patient age", "51.5 yrs", "Range 13–89 years", '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 15-5 16 0"/>'], ["Emergency admissions", "18,102", "32.9% of all admissions", '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>'], ["Medical conditions", "6", "Arthritis to Asthma, 9.1k–9.2k each", '<path d="M3 12h4l3-8 4 16 3-8h4"/>'], ["Insurance providers", "5", "Cigna leads with 20.3% of patients", '<path d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z"/>']];
+        $("#kpis").innerHTML = K.map(k => `<div class="card kpi">${ic(k[3])}<small>${k[0]}</small><b>${k[1]}</b><span>${k[2]}</span></div>`).join("");
+        function draw(id) {
+            const st = S[id]; let d = [...D[id]]; if (st.sort == "a") d.sort((a, b) => a[0].localeCompare(b[0])); else d.sort((a, b) => b[1] - a[1]);
+            const mx = Math.max(...D[id].map(x => x[1])), mn = Math.min(...D[id].map(x => x[1])), base = st.zoom ? mn * .98 : 0;
+            $("#" + id).innerHTML = d.map(([n, v]) => { const w = (v - base) / (mx - base) * 100; return `<div class="bar ${v == mx ? "top" : ""}" data-t="${n}: ${f(v)} patients (${(v / T * 100).toFixed(1)}%)"><span>${n}${v == mx ? '<span class="tag">Highest</span>' : v == mn ? '<span class="tag l">Lowest</span>' : ""}</span><div class="track"><div class="fill" data-w="${w}"></div></div><b>${f(v)}</b></div>` }).join("");
+            requestAnimationFrame(() => document.querySelectorAll("#" + id + " .fill").forEach(e => e.style.width = e.dataset.w + "%"));
+            document.querySelector(`[data-for=${id}]`).innerHTML = `<button class="${st.sort == "v" ? "on" : ""}" data-a="sort" data-v="v">By volume</button><button class="${st.sort == "a" ? "on" : ""}" data-a="sort" data-v="a">A–Z</button><button class="${st.zoom ? "on" : ""}" data-a="zoom" data-v="${st.zoom ? 0 : 1}">${st.zoom ? "Zoomed scale" : "Full scale"}</button>`
+        }
+        document.addEventListener("click", e => { const b = e.target.closest(".ctl button"); if (!b) return; const id = b.parentNode.dataset.for; S[id][b.dataset.a] = b.dataset.a == "zoom" ? +b.dataset.v : b.dataset.v; draw(id) });
+        draw("cond"); draw("ins");
+        const M = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], E = [1547, 1452, 1528, 1473, 1533, 1483, 1573, 1533, 1500, 1490, 1462, 1528], eM = Math.max(...E), em = Math.min(...E);
+        $("#em").innerHTML = E.map((v, i) => `<div class="col ${v == eM ? "pk" : v == em ? "lo" : ""}" data-t="${M[i]}: ${f(v)} emergency admissions${v == eM ? " (peak)" : v == em ? " (lowest)" : ""}"><em>${f(v)}</em><i data-h="${v / eM * 100}"></i><span>${M[i]}</span></div>`).join("");
+        requestAnimationFrame(() => document.querySelectorAll(".col i").forEach(e => e.style.height = e.dataset.h * .8 + "%"));
+        document.addEventListener("mousemove", e => { const t = e.target.closest("[data-t]"); tip.style.opacity = t ? 1 : 0; if (t) { tip.textContent = t.dataset.t; tip.style.left = Math.min(e.clientX + 14, innerWidth - 230) + "px"; tip.style.top = e.clientY + 14 + "px" } });
+        $("#th").onclick = () => { const r = document.documentElement; r.dataset.theme = r.dataset.theme == "dark" ? "" : "dark" };
+    </script>
+</body>
+
+</html>
